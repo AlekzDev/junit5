@@ -7,10 +7,10 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CuentaTest {
+public class CuentaTest {
 
     @Test
-    void testNombreCuenta() {
+    public void testNombreCuenta() {
         Cuenta cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         //cuenta.setPersona("Alejandro");
         String valorEsperado = "Alejandro";
@@ -20,7 +20,7 @@ class CuentaTest {
     }
 
     @Test
-    void testSaldoCuenta(){
+    public void testSaldoCuenta(){
         Cuenta cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         assertNotNull(cuenta.getSaldo());
         assertEquals(1000.12,cuenta.getSaldo().doubleValue());
@@ -29,7 +29,7 @@ class CuentaTest {
     }
 
     @Test
-    void testReferenciaCuenta() {
+    public void testReferenciaCuenta() {
         Cuenta cuenta1 = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         Cuenta cuenta2 = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         //Hasta aquí se están comparando las zonas de memoria (referencia)
@@ -37,7 +37,7 @@ class CuentaTest {
     }
 
     @Test
-    void testValorCuenta() {
+    public void testValorCuenta() {
         Cuenta cuenta1 = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         Cuenta cuenta2 = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         /*  Para este punto ya se modificó la lógica del equals del objeto Cuenta
@@ -48,7 +48,7 @@ class CuentaTest {
 
 
     @Test
-    void testDebitoCuenta() {
+    public void testDebitoCuenta() {
         Cuenta cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         cuenta.debito(new BigDecimal("100"));
         assertNotNull(cuenta.getSaldo());
@@ -57,7 +57,7 @@ class CuentaTest {
     }
 
     @Test
-    void testCreditoCuenta() {
+    public void testCreditoCuenta() {
         Cuenta cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         cuenta.credito(new BigDecimal("100"));
         assertNotNull(cuenta.getSaldo());
@@ -66,7 +66,7 @@ class CuentaTest {
     }
 
     @Test
-    void testDineroInsuficienteException() {
+    public void testDineroInsuficienteException() {
         Cuenta cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         Exception exception = assertThrows(DineroInsuficienteException.class, () -> {
             cuenta.debito(new BigDecimal("1001"));
