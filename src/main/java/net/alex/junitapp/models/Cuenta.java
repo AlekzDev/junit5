@@ -38,7 +38,7 @@ public class Cuenta {
     }
 
     public void debito(BigDecimal monto){
-        //BigDecimal es inmutable por lo que que hay que asignarlo así
+        //BigDecimal es inmutable por lo que hay que asignarlo así
         BigDecimal nuevoSaldo = this.saldo.subtract(monto);
         if(nuevoSaldo.compareTo(BigDecimal.ZERO) < 0)
             throw new DineroInsuficienteException("Dinero insuficiente");
@@ -46,7 +46,7 @@ public class Cuenta {
     }
 
     public void credito(BigDecimal monto){
-        //BigDecimal es inmutable por lo que que hay que asignarlo así
+        //BigDecimal es inmutable por lo que hay que asignarlo así
         this.saldo = this.saldo.add(monto);
     }
 
