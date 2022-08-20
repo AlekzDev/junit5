@@ -1,6 +1,8 @@
 package net.alex.junitapp.models;
 
 import net.alex.junitapp.exceptions.DineroInsuficienteException;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -10,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CuentaTest {
 
     @Test
+    @DisplayName("Prueba de nombre de cuenta")
     public void testNombreCuenta() {
         Cuenta cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         //cuenta.setPersona("Alejandro");
@@ -20,6 +23,7 @@ public class CuentaTest {
     }
 
     @Test
+    @DisplayName("Prueba de saldo de cuenta")
     public void testSaldoCuenta() {
         Cuenta cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         assertNotNull(cuenta.getSaldo());
@@ -29,6 +33,7 @@ public class CuentaTest {
     }
 
     @Test
+    @DisplayName("Prueba de referencia entre cuentas")
     public void testReferenciaCuenta() {
         Cuenta cuenta1 = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         Cuenta cuenta2 = new Cuenta("Alejandro", new BigDecimal("1000.12"));
@@ -37,6 +42,7 @@ public class CuentaTest {
     }
 
     @Test
+    @DisplayName("Prueba de valor de cuentas")
     public void testValorCuenta() {
         Cuenta cuenta1 = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         Cuenta cuenta2 = new Cuenta("Alejandro", new BigDecimal("1000.12"));
@@ -48,6 +54,7 @@ public class CuentaTest {
 
 
     @Test
+    @DisplayName("Prueba de débito")
     public void testDebitoCuenta() {
         Cuenta cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         cuenta.debito(new BigDecimal("100"));
@@ -57,6 +64,7 @@ public class CuentaTest {
     }
 
     @Test
+    @DisplayName("Prueba de crédito")
     public void testCreditoCuenta() {
         Cuenta cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         cuenta.credito(new BigDecimal("100"));
@@ -66,6 +74,7 @@ public class CuentaTest {
     }
 
     @Test
+    @DisplayName("Prueba de saldo insuficiente")
     public void testDineroInsuficienteException() {
         Cuenta cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         Exception exception = assertThrows(DineroInsuficienteException.class,
@@ -76,6 +85,8 @@ public class CuentaTest {
     }
 
     @Test
+    @Disabled
+    @DisplayName("Prueba de transferencia entre cuentas")
     public void testTransferirDineroCuentas() {
         Cuenta origen = new Cuenta("Ernesto", new BigDecimal("2500"));
         Cuenta destino = new Cuenta("Alejandro", new BigDecimal("1500.8989"));
@@ -87,6 +98,7 @@ public class CuentaTest {
     }
 
     @Test
+    @DisplayName("Prueba de relación de cuentas y banco")
     public void testRelacionBancoCuentas() {
         Cuenta cuenta1 = new Cuenta("Ernesto", new BigDecimal("2500"));
         Cuenta cuenta2 = new Cuenta("Alejandro", new BigDecimal("1500.8989"));
