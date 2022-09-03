@@ -1,20 +1,41 @@
 package net.alex.junitapp.models;
 
 import net.alex.junitapp.exceptions.DineroInsuficienteException;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// @TestInstance(TestInstance.Lifecycle.PER_CLASS) //No recomendado, ya que genera un estado.
 public class CuentaTest {
+
+    Cuenta cuenta;
+
+    @BeforeEach
+    public void initMetodoTest(){
+        this.cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
+        System.out.println("Iniciando método...");
+    }
+
+    @AfterEach
+    void afterEach() {
+        System.out.println("Finalizando método...");
+    }
+
+    @BeforeAll
+    static void beforeAll() {
+        System.out.println("Inicializando el test...");
+    }
+
+    @AfterAll
+    static void afterAll() {
+        System.out.println("Finalizando el test...");
+    }
 
     @Test
     @DisplayName("Prueba de nombre de cuenta")
     public void testNombreCuenta() {
-        Cuenta cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         //cuenta.setPersona("Alejandro");
         String valorEsperado = "Alejandro";
         String valorActual = cuenta.getPersona();
@@ -25,7 +46,6 @@ public class CuentaTest {
     @Test
     @DisplayName("Prueba de saldo de cuenta")
     public void testSaldoCuenta() {
-        Cuenta cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         assertNotNull(cuenta.getSaldo());
         assertEquals(1000.12, cuenta.getSaldo().doubleValue());
         assertFalse(cuenta.getSaldo().compareTo(BigDecimal.ZERO) < 0);
@@ -56,7 +76,6 @@ public class CuentaTest {
     @Test
     @DisplayName("Prueba de débito")
     public void testDebitoCuenta() {
-        Cuenta cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         cuenta.debito(new BigDecimal("100"));
         assertNotNull(cuenta.getSaldo());
         assertEquals(900, cuenta.getSaldo().intValue());
@@ -66,7 +85,6 @@ public class CuentaTest {
     @Test
     @DisplayName("Prueba de crédito")
     public void testCreditoCuenta() {
-        Cuenta cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         cuenta.credito(new BigDecimal("100"));
         assertNotNull(cuenta.getSaldo());
         assertEquals(1100, cuenta.getSaldo().intValue());
@@ -76,7 +94,6 @@ public class CuentaTest {
     @Test
     @DisplayName("Prueba de saldo insuficiente")
     public void testDineroInsuficienteException() {
-        Cuenta cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         Exception exception = assertThrows(DineroInsuficienteException.class,
                 () -> cuenta.debito(new BigDecimal("1001")));
         String valorActual = exception.getMessage();
@@ -85,7 +102,7 @@ public class CuentaTest {
     }
 
     @Test
-    @Disabled
+    //@Disabled
     @DisplayName("Prueba de transferencia entre cuentas")
     public void testTransferirDineroCuentas() {
         Cuenta origen = new Cuenta("Ernesto", new BigDecimal("2500"));
