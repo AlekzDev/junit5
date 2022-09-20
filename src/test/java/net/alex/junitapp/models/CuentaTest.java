@@ -5,6 +5,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -176,6 +177,23 @@ public class CuentaTest {
     @EnabledIfSystemProperty(named = "app.environment", matches = "dev")
     public void testDevEnvironment(){}
 
+    @Test
+    void printEnvironmentVariables() {
+        Map<String, String> variables = System.getenv();
+        variables.forEach((k,v) -> System.out.println(k +": " +v));
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "USER", matches = "alekz")
+    public void testUser(){}
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "ENVIRONMENT", matches = "PROD")
+    public void testProduction(){}
+
+    @Test
+    @DisabledIfEnvironmentVariable(named = "ENVIRONMENT", matches = "PROD")
+    public void testDevelopment(){}
 }
 
 
