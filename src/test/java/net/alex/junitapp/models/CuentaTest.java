@@ -2,8 +2,10 @@ package net.alex.junitapp.models;
 
 import net.alex.junitapp.exceptions.DineroInsuficienteException;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.*;
 
 import java.math.BigDecimal;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -141,6 +143,39 @@ public class CuentaTest {
                 )
         );
     }
+
+    @Test @EnabledOnOs(OS.WINDOWS)
+    public void testSoloWindows(){}
+
+    @Test @EnabledOnOs({OS.LINUX, OS.MAC})
+    public void testLinuxMac(){}
+
+    @Test @DisabledOnOs(OS.WINDOWS)
+    public void testNoWindows(){}
+
+    @Test @EnabledOnJre(JRE.JAVA_11)
+    public void testOnlyJava11(){}
+    @Test @EnabledOnJre(JRE.JAVA_18)
+    public void testOnlyJava18(){}
+
+    @Test
+    public void printSystemProperties(){
+        Properties properties = System.getProperties();
+        properties.forEach((k,v)-> System.out.println(k + ": " + v));
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "java.version", matches = ".*18.*")
+    public void testPropertyJavaVersion(){}
+
+    @Test
+    @DisabledIfSystemProperty(named = "os.arch", matches = ".*32.*")
+    public void testSolo62bits(){}
+
+    @Test
+    @EnabledIfSystemProperty(named = "app.environment", matches = "dev")
+    public void testDevEnvironment(){}
+
 }
 
 
