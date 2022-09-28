@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
 
 // @TestInstance(TestInstance.Lifecycle.PER_CLASS) //No recomendado, ya que genera un estado.
 public class CuentaTest {
@@ -16,7 +17,7 @@ public class CuentaTest {
     Cuenta cuenta;
 
     @BeforeEach
-    public void initMetodoTest(){
+    public void initMetodoTest() {
         this.cuenta = new Cuenta("Alejandro", new BigDecimal("1000.12"));
         System.out.println("Iniciando método...");
     }
@@ -145,55 +146,119 @@ public class CuentaTest {
         );
     }
 
-    @Test @EnabledOnOs(OS.WINDOWS)
-    public void testSoloWindows(){}
+    @Nested
+    class OperativeSystemTest {
+        @Test
+        @EnabledOnOs(OS.WINDOWS)
+        public void testSoloWindows() {
+        }
 
-    @Test @EnabledOnOs({OS.LINUX, OS.MAC})
-    public void testLinuxMac(){}
+        @Test
+        @EnabledOnOs({OS.LINUX, OS.MAC})
+        public void testLinuxMac() {
+        }
 
-    @Test @DisabledOnOs(OS.WINDOWS)
-    public void testNoWindows(){}
-
-    @Test @EnabledOnJre(JRE.JAVA_11)
-    public void testOnlyJava11(){}
-    @Test @EnabledOnJre(JRE.JAVA_18)
-    public void testOnlyJava18(){}
-
-    @Test
-    public void printSystemProperties(){
-        Properties properties = System.getProperties();
-        properties.forEach((k,v)-> System.out.println(k + ": " + v));
+        @Test
+        @DisabledOnOs(OS.WINDOWS)
+        public void testNoWindows() {
+        }
     }
 
-    @Test
-    @EnabledIfSystemProperty(named = "java.version", matches = ".*18.*")
-    public void testPropertyJavaVersion(){}
+    @Nested
+    class JavaVersionTest {
+        @Test
+        @EnabledOnJre(JRE.JAVA_11)
+        public void testOnlyJava11() {
+        }
 
-    @Test
-    @DisabledIfSystemProperty(named = "os.arch", matches = ".*32.*")
-    public void testSolo62bits(){}
+        @Test
+        @EnabledOnJre(JRE.JAVA_18)
+        public void testOnlyJava18() {
+        }
 
-    @Test
-    @EnabledIfSystemProperty(named = "app.environment", matches = "dev")
-    public void testDevEnvironment(){}
-
-    @Test
-    void printEnvironmentVariables() {
-        Map<String, String> variables = System.getenv();
-        variables.forEach((k,v) -> System.out.println(k +": " +v));
     }
 
-    @Test
-    @EnabledIfEnvironmentVariable(named = "USER", matches = "alekz")
-    public void testUser(){}
+    @Nested
+    class SystemPropertiesTest{
+        @Test
+        public void printSystemProperties() {
+            Properties properties = System.getProperties();
+            properties.forEach((k, v) -> System.out.println(k + ": " + v));
+        }
+
+        @Test
+        @EnabledIfSystemProperty(named = "java.version", matches = ".*18.*")
+        public void testPropertyJavaVersion() {}
+
+        @Test
+        @DisabledIfSystemProperty(named = "os.arch", matches = ".*32.*")
+        public void testSolo62bits() {}
+
+        @Test
+        @EnabledIfSystemProperty(named = "app.environment", matches = "dev")
+        public void testDevEnvironment() {}
+    }
+
+    @Nested
+    class EnvironmentVariableTest{
+        @Test
+        void printEnvironmentVariables() {
+            Map<String, String> variables = System.getenv();
+            variables.forEach((k, v) -> System.out.println(k + ": " + v));
+        }
+
+        @Test
+        @EnabledIfEnvironmentVariable(named = "USER", matches = "alekz")
+        public void testUser() {
+        }
+
+        @Test
+        @EnabledIfEnvironmentVariable(named = "ENVIRONMENT", matches = "PROD")
+        public void testProduction() {
+        }
+
+        @Test
+        @DisabledIfEnvironmentVariable(named = "ENVIRONMENT", matches = "PROD")
+        public void testDevelopment() {
+        }
+
+        @Test
+        @DisplayName("Prueba de saldo de cuenta DEV 1")
+        public void testSaldoCuentaDev1() {
+            boolean isDev = "dev".equals(System.getProperty("app.environment"));
+            assumeTrue(isDev);
+            assertNotNull(cuenta.getSaldo());
+            assertEquals(1000.12, cuenta.getSaldo().doubleValue());
+            assertFalse(cuenta.getSaldo().compareTo(BigDecimal.ZERO) < 0);
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        }
+    }
+
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "ENVIRONMENT", matches = "PROD")
-    public void testProduction(){}
+    @DisplayName("Prueba de saldo de cuenta DEV 2")
+    public void testSaldoCuentaDev2() {
+        boolean isDev = "dev".equals(System.getProperty("app.environment"));
+        assumingThat(isDev, () -> {
+            assertNotNull(cuenta.getSaldo());
+            assertEquals(1000.12, cuenta.getSaldo().doubleValue());
+        });
+        assertFalse(cuenta.getSaldo().compareTo(BigDecimal.ZERO) < 0);
+        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
 
-    @Test
-    @DisabledIfEnvironmentVariable(named = "ENVIRONMENT", matches = "PROD")
-    public void testDevelopment(){}
+    }
+
+    @DisplayName("Prueba de débito repetida")
+    @RepeatedTest(value=4, name="Repetición {currentRepetition} de {totalRepetitions}")
+    public void testDebitoCuentaRepeat(RepetitionInfo info) {
+        if(info.getCurrentRepetition() == 3){
+            System.out.println("ya casi terminan las pruebas");
+        }
+        cuenta.debito(new BigDecimal("100"));
+        assertNotNull(cuenta.getSaldo());
+        assertEquals(900, cuenta.getSaldo().intValue());
+        assertEquals("900.12", cuenta.getSaldo().toPlainString());
+    }
 }
 
 
