@@ -3,8 +3,15 @@ package net.alex.junitapp.models;
 import net.alex.junitapp.exceptions.DineroInsuficienteException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -179,7 +186,7 @@ public class CuentaTest {
     }
 
     @Nested
-    class SystemPropertiesTest{
+    class SystemPropertiesTest {
         @Test
         public void printSystemProperties() {
             Properties properties = System.getProperties();
@@ -188,19 +195,22 @@ public class CuentaTest {
 
         @Test
         @EnabledIfSystemProperty(named = "java.version", matches = ".*18.*")
-        public void testPropertyJavaVersion() {}
+        public void testPropertyJavaVersion() {
+        }
 
         @Test
         @DisabledIfSystemProperty(named = "os.arch", matches = ".*32.*")
-        public void testSolo62bits() {}
+        public void testSolo62bits() {
+        }
 
         @Test
         @EnabledIfSystemProperty(named = "app.environment", matches = "dev")
-        public void testDevEnvironment() {}
+        public void testDevEnvironment() {
+        }
     }
 
     @Nested
-    class EnvironmentVariableTest{
+    class EnvironmentVariableTest {
         @Test
         void printEnvironmentVariables() {
             Map<String, String> variables = System.getenv();
@@ -249,15 +259,72 @@ public class CuentaTest {
     }
 
     @DisplayName("Prueba de débito repetida")
-    @RepeatedTest(value=4, name="Repetición {currentRepetition} de {totalRepetitions}")
+    @RepeatedTest(value = 4, name = "Repetición {currentRepetition} de {totalRepetitions}")
     public void testDebitoCuentaRepeat(RepetitionInfo info) {
-        if(info.getCurrentRepetition() == 3){
+        if (info.getCurrentRepetition() == 3) {
             System.out.println("ya casi terminan las pruebas");
         }
         cuenta.debito(new BigDecimal("100"));
         assertNotNull(cuenta.getSaldo());
         assertEquals(900, cuenta.getSaldo().intValue());
         assertEquals("900.12", cuenta.getSaldo().toPlainString());
+    }
+
+    @Nested
+    class ParamTest {
+        @ParameterizedTest(name = "Ejecutando repetición {index} con valor {0}")
+        @ValueSource(strings = {"100", "200", "400", "800", "1000"})
+        @DisplayName("Prueba parametrizada con valueSource")
+        public void testDebitoCuentaValueSource(String monto) {
+            cuenta.debito(new BigDecimal(monto));
+            assertNotNull(cuenta.getSaldo());
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+        @ParameterizedTest(name = "Ejecutando repetición {index} con valor {0} - {argumentsWithNames}")
+        @CsvSource({"1,100", "2,200", "3,400", "4,800", "5,1000"})
+        @DisplayName("Prueba parametrizada con csvSource1")
+        public void testDebitoCuentaCsvSource1(String index, String value) {
+            System.out.println(index + " -> " + value);
+            cuenta.debito(new BigDecimal(value));
+            assertNotNull(cuenta.getSaldo());
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+        @ParameterizedTest(name = "Ejecutando repetición {index} con valor {0} - {argumentsWithNames}")
+        @CsvSource({"200,100", "250,200", "499,400", "850,800", "1000,1000"})
+        @DisplayName("Prueba parametrizada con csvSource2")
+        public void testDebitoCuentaCsvSource2(String saldo, String value) {
+            System.out.println(saldo + " -> " + value);
+            cuenta.setSaldo(new BigDecimal(saldo));
+            cuenta.debito(new BigDecimal(value));
+            assertNotNull(cuenta.getSaldo());
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+        @ParameterizedTest(name = "Ejecutando repetición {index} con valor {0}")
+        @CsvFileSource(resources = "/data.csv")
+        @DisplayName("Prueba parametrizada con CsvFileSource")
+        public void testDebitoCuentaCsvFileSource(String monto) {
+            cuenta.debito(new BigDecimal(monto));
+            assertNotNull(cuenta.getSaldo());
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+
+    }
+
+    @ParameterizedTest(name = "Ejecutando repetición {index} con valor {0}")
+    @MethodSource("montoList")
+    @DisplayName("Prueba parametrizada con MethodSource")
+    public void testDebitoCuentaMethodSource(String monto) {
+        cuenta.debito(new BigDecimal(monto));
+        assertNotNull(cuenta.getSaldo());
+        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+    }
+
+    static List<String> montoList() {
+        return Arrays.asList("100", "200", "400", "800", "1000");
     }
 }
 
