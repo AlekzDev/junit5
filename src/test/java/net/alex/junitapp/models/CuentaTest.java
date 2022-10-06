@@ -10,10 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
@@ -46,7 +43,8 @@ public class CuentaTest {
 
     @Test
     @DisplayName("Prueba de nombre de cuenta")
-    public void testNombreCuenta() {
+    public void testNombreCuenta(TestInfo info, TestReporter reporter) {
+        reporter.publishEntry("Ejecutado: " + info.getDisplayName() + " Método: " + Objects.requireNonNull(info.getTestMethod().orElse(null)).getName());
         //cuenta.setPersona("Alejandro");
         String valorEsperado = "Alejandro";
         String valorActual = cuenta.getPersona();
@@ -270,6 +268,7 @@ public class CuentaTest {
         assertEquals("900.12", cuenta.getSaldo().toPlainString());
     }
 
+    @Tag("param")
     @Nested
     class ParamTest {
         @ParameterizedTest(name = "Ejecutando repetición {index} con valor {0}")
@@ -314,6 +313,7 @@ public class CuentaTest {
 
     }
 
+    @Tag("param")
     @ParameterizedTest(name = "Ejecutando repetición {index} con valor {0}")
     @MethodSource("montoList")
     @DisplayName("Prueba parametrizada con MethodSource")
